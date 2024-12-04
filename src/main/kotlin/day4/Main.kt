@@ -2,66 +2,6 @@ package day4
 
 import java.io.File
 
-//fun main() {
-//  val input = File("src/main/kotlin/day4/input.txt").readText()
-//  val matrix = input.lines().map { line ->
-//    line.map { it }
-//  }
-//  for (i in matrix.indices) {
-//    for (j in matrix[i].indices) {
-//
-//    }
-//  }
-//}
-//
-//fun checkRight(matrix: List<List<Char>>, x: Int, y: Int): Boolean {
-//  runCatching {
-//    val a = matrix[x][y]
-//    val b = matrix[x+1][y]
-//    val c = matrix[x+2][y]
-//    val d = matrix[x+3][y]
-//    val result = "$a$b$c$d"
-//    if (result == "XMAS" || result == "SAMX") return true
-//  }
-//  return false
-//}
-//
-//fun checkDown(matrix: List<List<Char>>, x: Int, y: Int): Boolean {
-//  runCatching {
-//    val a = matrix[x][y]
-//    val b = matrix[x][y+1]
-//    val c = matrix[x][y+2]
-//    val d = matrix[x][y+3]
-//    val result = "$a$b$c$d"
-//    if (result == "XMAS" || result == "SAMX") return true
-//  }
-//  return false
-//}
-//
-//fun checkDiag(matrix: List<List<Char>>, x: Int, y: Int): Boolean {
-//  runCatching {
-//    val a = matrix[x][y]
-//    val b = matrix[x+1][y+1]
-//    val c = matrix[x+2][y+2]
-//    val d = matrix[x+3][y+3]
-//    val result = "$a$b$c$d"
-//    if (result == "XMAS" || result == "SAMX") return true
-//  }
-//  return false
-//}
-//
-//fun checkDiagNeg(matrix: List<List<Char>>, x: Int, y: Int): Boolean {
-//  runCatching {
-//    val a = matrix[x][y]
-//    val b = matrix[x-1][y+1]
-//    val c = matrix[x-2][y+2]
-//    val d = matrix[x-3][y+3]
-//    val result = "$a$b$c$d"
-//    if (result == "XMAS" || result == "SAMX") return true
-//  }
-//  return false
-//}
-
 fun main() {
   val input = File("src/main/kotlin/day4/input.txt").readText()
   val matrix = input.lines().map { line ->
@@ -73,6 +13,7 @@ fun main() {
   val upDown = matrix.indices.sumOf { index ->
     getColumn(matrix, index).concatToString().windowed(4).count { it == "XMAS" || it == "SAMX" }
   }
+  // since we start at index 0,0 and moving "right"
   val diagonalUpper = matrix.indices.sumOf { index ->
     var start = index
     var diagonal = ""
@@ -81,6 +22,7 @@ fun main() {
     }
     diagonal.windowed(4).count { it == "XMAS" || it == "SAMX" }
   }
+  // skipping 0,0, moving "left"
   val diagonalDown = matrix.indices.sumOf { index ->
     if (index == 0) return@sumOf 0
     var start = index
@@ -91,26 +33,54 @@ fun main() {
     diagonal.windowed(4).count { it == "XMAS" || it == "SAMX" }
   }
 
-  val rev = matrix.reversed().map { it }
-  val revDiagonalUpper = rev.indices.sumOf { index ->
+  // flip the matrix, do the same as above
+  val revDiagonalUpper = matrix.reversed().indices.sumOf { index ->
     var start = index
     var diagonal = ""
-    rev.indices.forEach { i ->
-      runCatching { diagonal += (rev[i][start++]) }
+    matrix.reversed().indices.forEach { i ->
+      runCatching { diagonal += (matrix.reversed()[i][start++]) }
     }
     diagonal.windowed(4).count { it == "XMAS" || it == "SAMX" }
   }
-  val revDiagonalDown = rev.indices.sumOf { index ->
+  val revDiagonalDown = matrix.reversed().indices.sumOf { index ->
     if (index == 0) return@sumOf 0
     var start = index
     var diagonal = ""
-    rev.indices.forEach { i ->
-      runCatching { diagonal += (rev[start++][i]) }
+    matrix.reversed().indices.forEach { i ->
+      runCatching { diagonal += (matrix.reversed()[start++][i]) }
     }
     diagonal.windowed(4).count { it == "XMAS" || it == "SAMX" }
   }
   println(rightLeft + upDown + diagonalUpper + diagonalDown + revDiagonalUpper + revDiagonalDown)
   // 2549 RIGHT ANSWER
+
+  var acc = 0
+  matrix.indices.forEach { i ->
+    matrix[i].indices.forEach loop@{ j ->
+      val message = getCube(matrix, i, j)
+      if (message.isBlank()) return@loop
+      val one = listOf(message[0], message[4], message[8]).joinToString("")
+      val two = listOf(message[2], message[4], message[6]).joinToString("")
+      if ((one == "MAS" || one == "SAM") && (two == "MAS" || two == "SAM")) acc++
+    }
+  }
+  println(acc)
 }
 
 fun getColumn(matrix: List<List<Char>>, col: Int) = CharArray(matrix.size) { matrix[it][col] }
+fun getCube(matrix: List<List<Char>>, x: Int, y: Int): String {
+  runCatching {
+    return listOf(
+      matrix[x][y],
+      matrix[x][y+1],
+      matrix[x][y+2],
+      matrix[x+1][y],
+      matrix[x+1][y+1],
+      matrix[x+1][y+2],
+      matrix[x+2][y],
+      matrix[x+2][y+1],
+      matrix[x+2][y+2],
+    ).toList().joinToString("")
+  }
+  return ""
+}
