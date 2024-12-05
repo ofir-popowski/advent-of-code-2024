@@ -13,7 +13,7 @@ fun main() {
   val pageLists = pagesFile.map { page ->
     page.split(",").map { it.toInt() }.toMutableList()
   }
-  for (i in 0..10000) {
+  for (i in 0..100) {
     pageLists.forEach { pages ->
       rulesPairs.forEach inner@{ rule ->
         val indexOfFirst = pages.indexOf(rule.first)
@@ -26,7 +26,6 @@ fun main() {
       }
     }
   }
-  pageLists.forEach { println(it) }
   var acc = 0
   for (i in 0..originalPageLists.lastIndex) {
     val orig = originalPageLists[i]
