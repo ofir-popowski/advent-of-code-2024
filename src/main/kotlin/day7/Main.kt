@@ -22,12 +22,12 @@ fun main() {
     val res = combinations.map { bits ->
       val linked = LinkedList(numbers)
       bits.forEachIndexed { index, c ->
-        linked.add(index * 2 + 1, toOp(c).toString())
+        linked.add(index * 2 + 1, c.toString())
       }
       var sum = linked.first().toLong()
       val rest = linked.slice(1 until linked.size)
       rest.windowed(2, 2, false) {
-        val operator = Operator.valueOf(it[0])
+        val operator = toOp(it[0])
         val next = it[1].toLong()
         when (operator) {
           Operator.Plus -> sum += next
@@ -45,11 +45,11 @@ fun main() {
   // 456565678667482 correct for part 2
 }
 
-fun toOp(c: Char): Operator {
+fun toOp(c: String): Operator {
   return when (c) {
-    '0' -> Operator.Plus
-    '1' -> Operator.Multiply
-    '2' -> Operator.Join
+    "0" -> Operator.Plus
+    "1" -> Operator.Multiply
+    "2" -> Operator.Join
     else -> throw IllegalArgumentException("")
   }
 }
