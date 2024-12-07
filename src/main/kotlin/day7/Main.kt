@@ -12,13 +12,13 @@ fun main() {
     val goal = split.first().replace(":", "").toLong()
     val numbers = split.slice(1..split.lastIndex)
     val spaces = numbers.size - 1
-    val toBinary = (3.0.pow(spaces.toDouble()) - 1).toInt()
+    // coefficient should be 2 for part one, 3 for part two
+    val coefficient = 3.0
+    val toBinary = (coefficient.pow(spaces.toDouble()) - 1).toInt()
     val combinations = (0..toBinary).map {
-      val toString = it.toString(3).padStart(spaces, '0')
-      // this was used for part 1
-      val formatted = String.format("%${spaces}s", Integer.toBinaryString(it)).replace(' ', '0')
-      toString
+      it.toString(coefficient.toInt()).padStart(spaces, '0')
     }
+//    println(combinations)
     val res = combinations.map { bits ->
       val linked = LinkedList(numbers)
       bits.forEachIndexed { index, c ->
@@ -35,8 +35,8 @@ fun main() {
           Operator.Join -> sum = (sum.toString() + next.toString()).toLong()
         }
       }
-      print("$linked -> $sum")
-      println()
+//      print("$linked -> $sum")
+//      println()
       sum
     }
     if (res.contains(goal)) goal else 0
